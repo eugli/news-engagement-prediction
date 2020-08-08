@@ -1,2 +1,2 @@
 # news-engagement-prediction
- This repo demos engagement prediction in news articles using CNN-BiLSTM networks.
+ This repo demos predicting engagmeent in news articles using CNN-BiLSTM networks.
