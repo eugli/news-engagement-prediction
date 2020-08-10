@@ -28,9 +28,11 @@ class CNN_BiLSTM(nn.Module):
         self.conv_in = hps.conv_in
         self.conv_out = hps.conv_out
         self.kernel_sizes = hps.kernel_sizes
+        self.paddings = hps.paddings
         self.stride = hps.stride
         
         self.linear_in = hps.linear_in
+        self.linear_in2 = hps.linear_in2
         self.linear_out = hps.linear_out      
         self.linear_dropout = hps.linear_dropout
         
@@ -39,12 +41,12 @@ class CNN_BiLSTM(nn.Module):
         if hps.pretrained_embed:
             pass
 
-        self.convs = [nn.Conv2d(self.conv_in, self.conv_out, (kernel_size, self.embed_dim), padding=(kernel_size//2, 0), stride=1) for                   kernel_size in self.kernel_sizes]
+        self.convs = [nn.Conv2d(self.conv_in, self.conv_out, (kernel_size, self.embed_dim), padding=(self.paddings[kernel_size], 0), stride=1)           for kernel_size in self.kernel_sizes]
 
         self.bilstm = nn.LSTM(self.embed_dim, self.hidden_dim, num_layers=self.num_layers, dropout=self.lstm_dropout,                                   bidirectional=self.bidrectional)
 
-        self.fc1 = nn.Linear(self.linear_in, self.linear_in//2)
-        self.fc2 = nn.Linear(self.linear_in//2, self.linear_out)
+        self.fc1 = nn.Linear(self.linear_in, self.linear_in2)
+        self.fc2 = nn.Linear(self.linear_in2, self.linear_out)
         
         self.dropout = nn.Dropout(self.linear_dropout)
 
@@ -54,7 +56,7 @@ class CNN_BiLSTM(nn.Module):
         cnn_x = embed
         cnn_x = torch.transpose(cnn_x, 0, 1)
         cnn_x = cnn_x.unsqueeze(1)
-        cnn_x = [conv(cnn_x).squeeze(3) for conv in self.convs1]  # [(N,Co,W), ...]*len(Ks)
+        cnn_x = [conv(cnn_x).squeeze(3) for conv in self.convs]  # [(N,Co,W), ...]*len(Ks)
         cnn_x = [F.relu(F.max_pool1d(i, i.size(2)).squeeze(2)) for i in cnn_x]  # [(N,Co), ...]*len(Ks)
         cnn_x = torch.cat(cnn_x, 1)
 

@@ -41,6 +41,7 @@ cnn = Hyperparams(
     conv_in=1,
     conv_out=100,
     kernel_sizes=[3, 4, 5],
+    paddings=[-1, -1, -1],
     stride=1
 )
 HPARAMS_REGISTRY['cnn'] = cnn
@@ -55,6 +56,7 @@ HPARAMS_REGISTRY['bilstm'] = bilstm
 
 linear = Hyperparams(
     linear_in=-1,
+    linear_in2=-1,
     linear_out=1,
     linear_dropout=0.5
 )
@@ -81,16 +83,19 @@ hps_data = Hyperparams(
 DEFAULTS['data'] = hps_data
 
 hps_save = Hyperparams(
-    save_path='ckpts'
+    save_path='ckpts/'
 )
 DEFAULTS['save'] = hps_save
 
 hps_opt = Hyperparams(
     cuda=False,
     adam=True,
-    sgd=False,    
-    epochs=1000,
-    lr=0.0003,
+    sgd=False,  
+    mse=True,
+    epochs=100,
+    patience=-1,
+    lr=0.001,
     clip=1,
+    momentum=0.9   
 )
 DEFAULTS['opt'] = hps_opt

@@ -13,14 +13,12 @@ import math
 
 import matplotlib.pyplot as plt
 import matplotlib.dates as dates
-
 import matplotlib.ticker as ticker
 import matplotlib.dates as md
 
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-
 from torch.utils.data import TensorDataset, DataLoader
 
 from hparams import hps_data
@@ -175,9 +173,13 @@ def pad_titles(title_tokens, seq_length=hps_data.seq_length):
         padded_titles.append(title)        
     return np.array(padded_titles)
 
+# update to use kwargs to allow for the adjustment of any hparam
 def update_hps(hps, tokens):
     hps.embed_in = len(tokens)
+    hps.paddings = {k:k//2 for k in hps.kernel_sizes}    
     hps.linear_in = len(hps.kernel_sizes)*hps.conv_out+hps.hidden_dim*hps.num_layers
+    hps.linear_in2 = hps.linear_in//2
+    hps.patience = hps.epochs//5
     return hps
 
 def get_mean_std(data):
@@ -196,7 +198,7 @@ def split_data(data, split_frac=hps_data.split_frac):
     return train, val, test
 
 def create_tensor_dataset(data_x, data_y):
-    return TensorDataset(torch.from_numpy(data_x), torch.from_numpy(data_y))
+    return TensorDataset(torch.from_numpy(data_x).to(torch.int64), torch.from_numpy(data_y))
 
 def create_loader(data, batch_size=hps_data.batch_size):
     return DataLoader(data, shuffle=True, batch_size=batch_size)
