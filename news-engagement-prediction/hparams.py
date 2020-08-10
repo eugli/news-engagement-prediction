@@ -31,23 +31,34 @@ def setup_hparams(hparam_set_names, kwargs):
 embedding = Hyperparams(
     pretrained_embed=False,
     padding_id=0,
-    embed_in=0,
-    embed_size=0,
+    embed_in=-1,
+    embed_dim=200,
     
 )
 HPARAMS_REGISTRY['embedding'] = embedding
 
 cnn = Hyperparams(
-    conv_in=0,
-    conv_out=0
+    conv_in=1,
+    conv_out=100,
+    kernel_sizes=[3, 4, 5],
+    stride=1
 )
 HPARAMS_REGISTRY['cnn'] = cnn
 
 bilstm = Hyperparams(
-    hidden_dim=500,
-    num_layers=2
+    bidrectional=True,
+    hidden_dim=200,
+    num_layers=2,
+    lstm_dropout=0.1
 )
 HPARAMS_REGISTRY['bilstm'] = bilstm
+
+linear = Hyperparams(
+    linear_in=-1,
+    linear_out=1,
+    linear_dropout=0.5
+)
+HPARAMS_REGISTRY['linear'] = linear
 
 hps_data = Hyperparams(
     data_path_wh_popular='data/raw',
@@ -59,7 +70,7 @@ hps_data = Hyperparams(
     punct=f'{punctuation}–\'\"‘’…«—-”“£',
     score='original',
     indent=4,
-    max_count=2000,
+    max_count=1000,
     comment_weight=5,
     take_log=True,
     min_len=3,
@@ -69,10 +80,17 @@ hps_data = Hyperparams(
 )
 DEFAULTS['data'] = hps_data
 
+hps_save = Hyperparams(
+    save_path='ckpts'
+)
+DEFAULTS['save'] = hps_save
+
 hps_opt = Hyperparams(
     cuda=False,
+    adam=True,
+    sgd=False,    
     epochs=1000,
     lr=0.0003,
-    clip=1
+    clip=1,
 )
-DEFAULTS["opt"] = hps_opt
+DEFAULTS['opt'] = hps_opt

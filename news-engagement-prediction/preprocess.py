@@ -18,6 +18,9 @@ import matplotlib.ticker as ticker
 import matplotlib.dates as md
 
 import torch
+import torch.nn as nn
+import torch.nn.functional as F
+
 from torch.utils.data import TensorDataset, DataLoader
 
 from hparams import hps_data
@@ -172,11 +175,16 @@ def pad_titles(title_tokens, seq_length=hps_data.seq_length):
         padded_titles.append(title)        
     return np.array(padded_titles)
 
+def update_hps(hps, tokens):
+    hps.embed_in = len(tokens)
+    hps.linear_in = len(hps.kernel_sizes)*hps.conv_out+hps.hidden_dim*hps.num_layers
+    return hps
+
 def get_mean_std(data):
     return np.mean(data), np.std(data)
 
 def scale_data(data, mean, std):
-    return (data-mean)/std
+    return list((data-mean)/std)
     
 def split_data(data, split_frac=hps_data.split_frac):
     data = np.array(data)
