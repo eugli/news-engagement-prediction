@@ -1,9 +1,9 @@
 import matplotlib.pyplot as plt
 
-def graph_losses(train_losses):
+def graph_losses(losses):
     plt.figure(figsize=(10,5))
-    plt.plot(train_losses, label='Train Loss')
-#     plt.plot(test_losses, label='Test Loss')
+    plt.plot(losses['train'], label='Train Loss')
+    plt.plot(losses['val'], label='Val Loss')
 
     plt.title('Loss vs. Epoch', fontsize=14, y=1.03)
     plt.ylabel('Loss', fontsize=12, labelpad=10)

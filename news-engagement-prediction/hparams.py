@@ -55,7 +55,8 @@ HPARAMS_REGISTRY['cnn'] = cnn
 
 bilstm = Hyperparams(
     bidrectional=True,
-    hidden_dim=200,
+    batch_first=True,
+    hidden_dim=100,
     num_layers=2,
     lstm_dropout=0.1
 )
@@ -82,13 +83,15 @@ hps_data = Hyperparams(
     score='original',
     timezone='US/Eastern',
     indent=4,
-    max_count=1000,
+    max_count=200,
     comment_weight=5,
     take_log=True,
     min_len=3,
     seq_length=25,
     split_frac=0.8,
-    batch_size=10
+    shuffle=True,
+    batch_size=10,
+    drop_last=True
 )
 DEFAULTS['data'] = hps_data
 
@@ -96,7 +99,8 @@ hps_save = Hyperparams(
     ckpts_s='ckpts',
     folder_s=None,
     dataset_s=None,
-    count_s=None
+    count_s=None,
+    use_min=False
 )
 DEFAULTS['save'] = hps_save
 
@@ -105,6 +109,7 @@ hps_opt = Hyperparams(
     adam=True,
     sgd=False,  
     mse=True,
+    seed=42,
     epochs=100,
     patience=-1,
     lr=0.001,

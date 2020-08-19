@@ -170,6 +170,7 @@ def update_hps(hps, **kwargs):
     hps.linear_in2 = hps.linear_in//2
     hps.patience = hps.epochs//5
     hps.dataset_s = hps.dataset.replace('-', '_')
+    hps.count_s = hps.max_count
     hps.update(**kwargs)
     return hps
 
@@ -191,5 +192,5 @@ def split_data(data, split_frac=hps_data.split_frac):
 def create_tensor_dataset(data_x, data_y):
     return TensorDataset(torch.from_numpy(data_x).to(torch.int64), torch.from_numpy(data_y))
 
-def create_loader(data, batch_size=hps_data.batch_size):
-    return DataLoader(data, shuffle=True, batch_size=batch_size)
+def create_loader(data, shuffle=hps_data.shuffle, batch_size=hps_data.batch_size, drop_last=hps_data.drop_last):
+    return DataLoader(data, shuffle=shuffle, batch_size=batch_size, drop_last=drop_last)

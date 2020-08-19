@@ -1,6 +1,7 @@
 import os
 import pickle
 import pytz
+from datetime import datetime
 from termcolor import colored
 
 import numpy as np
@@ -11,7 +12,7 @@ import torch.nn as nn
 
 from hparams import hps_data, hps_save, hps_opt, setup_hparams
 from preprocess import update_hps
-from model import MODELS, LSTM
+from model import MODELS, CNN_BiLSTM
 
 def get_optimizer(model, lr=hps_opt.lr, momentum=hps_opt.momentum):
     if hps_opt.adam:
@@ -22,10 +23,6 @@ def get_optimizer(model, lr=hps_opt.lr, momentum=hps_opt.momentum):
 def get_criterion():
     if hps_opt.mse:
         return nn.MSELoss()
-    
-def set_seed():
-    torch.manual_seed(hps_opt.seed)
-    return hps_opt.seed
 
 def create_folder():
     local = pytz.timezone(hps_data.timezone)
@@ -34,14 +31,18 @@ def create_folder():
     os.mkdir(f'{hps_save.ckpts_s}/{folder}')
     return folder
 
+def set_seed():
+    torch.manual_seed(hps_opt.seed)
+    return hps_opt.seed
+
 def get_hps(update_dict):
     architecture = MODELS[update_dict['ml_choice']]
-    hps = setup_hparams(architecture, **update_dict)
+    hps = setup_hparams(architecture, update_dict)
     hps = update_hps(hps)
     return hps
 
 def save_model(hps, model, min_loss):
-    print('Saving model...')
+    print('Saving model...', end='')
     if hps.use_min:
         min_loss = round(min_loss, 5)              
         ml_file = f'{hps_save.ckpts_s}/{hps.folder_s}/{hps.dataset_s}_{hps.count_s}_{min_loss}_model.pt'
@@ -51,7 +52,7 @@ def save_model(hps, model, min_loss):
     return ml_file   
 
 def get_model(hps):
-    model = LSTM(hps)
+    model = CNN_BiLSTM(hps)
     return model
 
 def save(folder, item_name, item):
@@ -64,7 +65,7 @@ def load(folder, item_name):
     item = pickle.load(phile)    
     return item          
 
-def train(hps, model, train_loader, test_loader, opt, criterion, epochs=hps_opt.epochs):
+def train(hps, model, train_loader, val_loader, opt, criterion):
     losses = {}
     losses['train'] = []
     losses['val'] = []
@@ -72,9 +73,9 @@ def train(hps, model, train_loader, test_loader, opt, criterion, epochs=hps_opt.
     running_out_of = 0
     
     print(colored(f'Running...', 'magenta'))        
-    for e in range(epochs):
+    for e in range(hps.epochs):
         if running_out_of >= hps.patience:
-            print(f'No progress detected in {hps.patience} epochs...\n')
+            print(f'No progress detected in {hps.patience} epochs...')
             break
         model.train()            
         train_loss = 0
@@ -88,7 +89,7 @@ def train(hps, model, train_loader, test_loader, opt, criterion, epochs=hps_opt.
             opt.step()
             train_loss += loss.item()
         train_loss = train_loss/hps.batch_size
-        val_loss = evaluate(hps, model, test_loader, opt, criterion)        
+        val_loss = validate(hps, model, val_loader, opt, criterion)        
         losses['train'].append(train_loss)
         losses['val'].append(val_loss)
         if e == 0 or (e+1)%10 == 0:
@@ -99,29 +100,29 @@ def train(hps, model, train_loader, test_loader, opt, criterion, epochs=hps_opt.
             losses['min'] = losses['val'][-1]
             print(colored('Min Loss: {:.5f}'.format(losses['min']), 'cyan'))
             running_out_of = 0
-        running_out_of+=1
-    return model, ml_file, losses
+        running_out_of+=1      
+    return model, losses
 
-def evaluate(hps, model, test_loader, opt, criterion):           
+def validate(hps, model, val_loader, opt, criterion):           
     with torch.no_grad():
         model.eval()
     val_loss = 0                 
-    for inputs, labels in test_loader:
+    for inputs, labels in val_loader:
         output = model(inputs)
         loss = criterion(output, labels.float())
         val_loss += loss.item()
     val_loss = val_loss/hps.batch_size
     return val_loss
 
-def run(train_loader, test_loader, update_dict, folder, **kwargs):
+def run(train_loader, val_loader, update_dict, folder, **kwargs):
     update_dict.update(**kwargs)
     hps = get_hps(update_dict)
-    model = get_model(chps)
-    opt = get_optimizer(cmodel)
+    model = get_model(hps)
+    opt = get_optimizer(model)
     criterion = get_criterion()  
-    model, ml_file, losses = train(hps, model, train_loader, test_loader, opt, criterion, epochs=hps_opt.epochs)
-    save_model(hps, model, losses['min'])
+    model, losses = train(hps, model, train_loader, val_loader, opt, criterion)
+    ml_file = save_model(hps, model, losses['min'])  
     save(folder, 'hps', hps)    
     save(folder, 'ml_file', ml_file)
     save(folder, 'losses', losses)
-    return model, hps, ml_file, losses
+    return hps, model, ml_file, losses
