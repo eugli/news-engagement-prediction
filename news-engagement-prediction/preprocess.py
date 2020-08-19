@@ -8,24 +8,15 @@ from string import punctuation
 
 import numpy as np
 import pandas as pd
-import random
-import math
-
-import matplotlib.pyplot as plt
-import matplotlib.dates as dates
-import matplotlib.ticker as ticker
-import matplotlib.dates as md
 
 import torch
-import torch.nn as nn
-import torch.nn.functional as F
 from torch.utils.data import TensorDataset, DataLoader
 
 from hparams import hps_data
 
-def read_data(max_count=hps_data.max_count):
+def read_data(dataset, max_count=hps_data.max_count):
     # https://webhose.io/free-datasets/popular-news-articles/
-    data_path = hps_data.data_path_wh_popular
+    data_path = hps_data.data_paths[dataset]
     files = os.listdir(data_path)
     data_all = []
  
@@ -173,13 +164,13 @@ def pad_titles(title_tokens, seq_length=hps_data.seq_length):
         padded_titles.append(title)        
     return np.array(padded_titles)
 
-# update to use kwargs to allow for the adjustment of any hparam
-def update_hps(hps, tokens):
-    hps.embed_in = len(tokens)
+def update_hps(hps, **kwargs):
     hps.paddings = {k:k//2 for k in hps.kernel_sizes}    
     hps.linear_in = len(hps.kernel_sizes)*hps.conv_out+hps.hidden_dim*hps.num_layers
     hps.linear_in2 = hps.linear_in//2
     hps.patience = hps.epochs//5
+    hps.dataset_s = hps.dataset.replace('-', '_')
+    hps.update(**kwargs)
     return hps
 
 def get_mean_std(data):

@@ -1,12 +1,4 @@
-import numpy as np
-import pandas as pd
-import random
-import math
-
 import matplotlib.pyplot as plt
-import matplotlib.dates as dates
-import matplotlib.ticker as ticker
-import matplotlib.dates as md
 
 def graph_losses(train_losses):
     plt.figure(figsize=(10,5))

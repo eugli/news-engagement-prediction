@@ -10,6 +10,12 @@ class Hyperparams(dict):
     def __setattr__(self, attr, value):
         self[attr] = value
         
+    def __getstate__(self):
+        return self
+    
+    def __setstate__(self, kwargs):
+        self.update(**kwargs)
+        
 def setup_hparams(hparam_set_names, kwargs):
     H = Hyperparams()
     if not isinstance(hparam_set_names, tuple):
@@ -18,7 +24,8 @@ def setup_hparams(hparam_set_names, kwargs):
     
     for k, v in DEFAULTS.items():
         H.update(v)
-        
+    for x in hparam_set_names:
+        H.update({x:True})
     for hps in hparam_sets:
 #         create a mini version of the model to add to defaults
 #         for k in hps:
@@ -26,7 +33,7 @@ def setup_hparams(hparam_set_names, kwargs):
 #                 raise ValueError(f"{k} not in default args")
         H.update(**hps)
     H.update(**kwargs)
-    return H        
+    return H      
 
 embedding = Hyperparams(
     pretrained_embed=False,
@@ -63,7 +70,9 @@ linear = Hyperparams(
 HPARAMS_REGISTRY['linear'] = linear
 
 hps_data = Hyperparams(
-    data_path_wh_popular='data/raw',
+    data_paths={
+        'webhose-popular':'data/raw'
+    },
     use_all_data=False,
     keep_keys=['text', 'title', 'domain_rank', 'performance_score', 'site', 'social', 'url'],
     key_order=['title', 'sanitized_title', 'text', 'url', 'site', 'domain_rank', 'engagement_scores'],
@@ -71,6 +80,7 @@ hps_data = Hyperparams(
     allowed = ['á', 'é', 'í', 'ó', 'ú', 'ü', 'ñ'],
     punct=f'{punctuation}–\'\"‘’…«—-”“£',
     score='original',
+    timezone='US/Eastern',
     indent=4,
     max_count=1000,
     comment_weight=5,
@@ -83,7 +93,10 @@ hps_data = Hyperparams(
 DEFAULTS['data'] = hps_data
 
 hps_save = Hyperparams(
-    save_path='ckpts/'
+    ckpts_s='ckpts',
+    folder_s=None,
+    dataset_s=None,
+    count_s=None
 )
 DEFAULTS['save'] = hps_save
 
