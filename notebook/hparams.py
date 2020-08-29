@@ -91,7 +91,9 @@ hps_data = Hyperparams(
     split_frac=0.8,
     shuffle=True,
     batch_size=10,
-    drop_last=True
+    drop_last=True,
+    mean=-1,
+    std=-1
 )
 DEFAULTS['data'] = hps_data
 

@@ -114,7 +114,7 @@ def validate(hps, model, val_loader, opt, criterion):
     val_loss = val_loss/hps.batch_size
     return val_loss
 
-def run(train_loader, val_loader, update_dict, folder, **kwargs):
+def run(train_loader, val_loader, update_dict, **kwargs):
     update_dict.update(**kwargs)
     hps = get_hps(update_dict)
     model = get_model(hps)
@@ -122,7 +122,4 @@ def run(train_loader, val_loader, update_dict, folder, **kwargs):
     criterion = get_criterion()  
     model, losses = train(hps, model, train_loader, val_loader, opt, criterion)
     ml_file = save_model(hps, model, losses['min'])  
-    save(folder, 'hps', hps)    
-    save(folder, 'ml_file', ml_file)
-    save(folder, 'losses', losses)
     return hps, model, ml_file, losses

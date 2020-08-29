@@ -21,9 +21,12 @@ def test(hps, model, test_loader):
     outputs = np.hstack(outputs)
     return inputses, labelses, outputs
 
-def rescale_outputs(outputs, mean, std):
-    outputs = outputs*std+mean
-    return outputs
+def detach_numpy(item):
+    return np.array(item.detach())
+
+def rescale(item, hps):
+    item = item*hps.std+hps.mean
+    return item
 
 def get_detokens(tokens):
     detokens = {token:word for word, token in tokens.items()}

@@ -1,34 +1,69 @@
+import json
 import pickle
 
-import numpy as np
+import torch
 
-from flask import Flask
-from flask_restful import reqparse, abort, Api, Resource
+from flask import Flask, request, jsonify, render_template
 
+import preprocess as pp
+import postprocess as pop
 from train import load
 
-def setup_api():
-    app = Flask(__name__)
-    api = Api(app)
+app = Flask(__name__)
+folder = '08-24-12-07-06-PM'
+hps = load(folder, 'hps')
+ml_file = load(folder, 'ml_file')
+model = torch.load(ml_file)
+tokens = load(folder, 'tokens')
 
-def setup_parser():
-    parser = reqparse.RequestParser()
-    parser.add_argument('query')
+@app.route('/')
+def index():
+    return render_template('index.html')
 
-class PredictVirality(Resource):
-    def get(self):
-        args = parser.parse_args()
-        user_query = args['query']
+@app.route('/predict', methods=['POST'])
+def predict():
+    if request.method == 'POST':
+        params = request.get_json()
+        title = params['title']
+        prediction = get_prediction(title).item()
+    return jsonify({'engagement': prediction})
 
-        uq_vectorized = model.vectorizer_transform(np.array([user_query]))
-        prediction = model.predict(uq_vectorized)
+@app.route('/test', methods=['POST'])
+def test():
+    return jsonify({'engagement': 'test'})
 
-        output = {'prediction': pred_text}
-        return output
+def load_all(folder):
+    hps = load(folder, 'hps')
+    ml_file = load(folder, 'ml_file')
+    model = torch.load(ml_file)
+    tokens = load(folder, 'tokens')
+    return hps, model, tokens
 
-# Setup the Api resource routing here
-# Route the URL to the resource
-api.add_resource(PredictSentiment, '/')
+def set_all(chps, cmodel, ctokens):
+    global hps
+    global model
+    global tokens
+    hps = chps
+    model = cmodel
+    tokens = ctokens
+
+def preprocess(title, tokens):
+    title = pp.sanitize_text(title)
+    title = pp.tokenize_titles([title], tokens)
+    title = pp.pad_titles(title)
+    title = torch.tensor(title).to(torch.int64)
+    return title
+
+def postprocess(prediction, hps):
+    prediction = pop.detach_numpy(prediction)
+    prediction = pop.rescale(prediction, hps)
+    return prediction
+
+def get_prediction(title):
+    title = preprocess(title, tokens)
+    prediction = model.forward(title)
+    prediction = postprocess(prediction, hps)
+    return prediction
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run()
