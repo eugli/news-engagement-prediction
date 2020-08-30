@@ -1,0 +1,8 @@
+*.ipynb_checkpoints
+*/.ipynb_checkpoints/*
+*.zip
+
+ipython_config.py
+debug.log
+__pycache__
+data
