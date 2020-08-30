@@ -5,4 +5,4 @@
 ipython_config.py
 debug.log
 __pycache__
-data
+/data
