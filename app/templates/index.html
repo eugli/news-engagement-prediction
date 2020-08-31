@@ -1,16 +1,23 @@
 <!DOCTYPE html>
 <html lang='en'>
-    <head>
-		<link rel="icon" 
-	    	  type="image/png" 
-	     	  href="/favicon.png">
-        <title>news-engagement-prediction</title>
-        <meta charset='utf-8'>
-        <meta name='viewport'  content='width=device-width, initial-scale=1'>
-        <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css'>
-        <script src='https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js'></script>
-        <script src='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js'></script>
-        <script>
+   <head>
+      <link rel="icon" 
+         type="image/png" 
+         href="/favicon.png">
+      <title>news-engagement-prediction</title>
+      <meta charset='utf-8'>
+      <meta name='viewport'  content='width=device-width, initial-scale=1'>
+      <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Karma">
+      <link href='https://fonts.googleapis.com/css?family=Lato' rel='stylesheet' type='text/css'>
+      <script src='https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js'></script>
+      <script src='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js'></script>
+      <link rel="stylesheet" type="text/css" href="//code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css" />
+      <style>
+         body,h1,h2,h3,h4,h5,h6 {font-family: "Karma", sans-serif}
+         .w3-bar-block .w3-bar-item {padding:20px}
+      </style>
+      <script>
          function submitForm(oFormElement) {
             var xhr = new XMLHttpRequest();
             xhr.onload = function() {
@@ -21,7 +28,7 @@
                  } else {
                      resultElement.className = 'bg-danger';
                  }
- 				 resultElement.innerHTML = `On a scale of 1-10, your title is a ${result}.`;
+         resultElement.innerHTML = `On a scale of 1-10, your title is a ${result}.`;
              }
              xhr.open(oFormElement.method, oFormElement.action, true);
              xhr.setRequestHeader('Content-Type', 'application/json');
@@ -32,21 +39,32 @@
              xhr.send(JSON.stringify(json));
              return false;
          }
-        </script>
-    </head>
-    <body>
-        <div class='container'>
-            <h1>How viral will your news article be?</h1>
-            <p>Enter the title of your news article below and click submit to find out!</p>
+      </script>
+   </head>
+   <body>
+      <div class="w3-top">
+         <div class="w3-white w3-xlarge" style="max-width:1200px;margin:auto">
+            <div class="w3-center w3-padding-16" style="font-size:36px;font-weight:bold">news-engagement-prediction</div>
+         </div>
+      </div>
+
+      <div class="w3-display-middle" style="width:100%;border:none!important">
+          <hr id="about">
+          <div class="w3-container w3-padding-32 w3-center" style="border:none!important">
+            <h1 style="font-size:25px">How viral will your news article be?🤔</h1>
+            <p style="font-size:16px;margin-bottom:2%">Enter the title of your article below and click submit to find out!</p>
             <form method='POST'
-                  action='http://news-engagement-prediction.herokuapp.com/predict'
-                  onsubmit='return submitForm(this);' >
-                <div class='form-group'>
-                    <textarea class='form-control'  rows='5' id='title'>Please enter your title here.</textarea>
-                </div>
-                <button type='submit' class='btn btn-default'>Submit</button>
+               action='http://news-engagement-prediction.herokuapp.com/predict'
+               onsubmit='return submitForm(this);' >
+               <div class='form-group'>
+                  <textarea class='form-control'  rows='5' id='title' style="width:40%">Please enter your title here.</textarea>
+               </div>
+               <button type='submit' class="w3-button w3-round-large" style="background-color:#555555;color:white;margin-top:1%">Submit</button>
             </form>
             <h1 class='bg-success' id='result'></h1>
-        </div>
-    </body>
+          </div>
+          <hr>
+      </div>
+
+   </body>
 </html>
