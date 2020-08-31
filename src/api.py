@@ -1,3 +1,4 @@
+import os
 import json
 import pickle
 
@@ -9,7 +10,9 @@ import preprocess as pp
 import postprocess as pop
 from train import load
 
-app = Flask(__name__)
+template_folder = os.path.abspath('../app/templates')
+app = Flask(__name__, template_folder=template_folder)
+
 folder = '08-29-04-45-06-PM'
 hps = load(folder, 'hps')
 ml_file = load(folder, 'ml_file')
@@ -24,6 +27,10 @@ def predict():
         title = params['title']
         prediction = get_prediction(title).item()
     return jsonify({'engagement': prediction})
+
+@app.route('/')
+def load():
+    return render_template('index.html')
 
 def load_all(folder):
     hps = load(folder, 'hps')
