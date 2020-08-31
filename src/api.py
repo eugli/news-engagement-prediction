@@ -15,12 +15,14 @@ hps = load(folder, 'hps')
 ml_file = load(folder, 'ml_file')
 model = torch.load(ml_file)
 tokens = load(folder, 'tokens')
+dictionary = list(tokens.keys())
 
 @app.route('/predict', methods=['POST'])
 def predict():
     if request.method == 'POST':
         params = request.get_json(force=True)
         title = params['title']
+        title = ' '.join([word for word in title.split() if word not in dictionary])
         prediction = get_prediction(title).item()
     return jsonify({'engagement': prediction})
 

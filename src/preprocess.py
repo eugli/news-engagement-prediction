@@ -99,9 +99,10 @@ def sanitize_text(text):
     text = ''.join([c for c in text if c not in hps_data.punct])
     text = ' '.join(text.split())    
     test_text = ''.join([c for c in text if c not in hps_data.allowed])
-    if test_text.isascii():
+    try:
+        test_text.encode('ascii')
         return text
-    else:
+    except UnicodeEncodeError:
         return 'fail'
 
 def get_titles(data_all):
