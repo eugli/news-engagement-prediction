@@ -16,7 +16,7 @@ from hparams import hps_data
 
 def read_data(dataset, max_count=hps_data.max_count):
     # https://webhose.io/free-datasets/popular-news-articles/
-    data_path = hps_data.data_paths[dataset]
+    data_path = f'data/{hps_data.data_l[dataset]}'
     files = os.listdir(data_path)
     data_all = []
  
@@ -24,7 +24,7 @@ def read_data(dataset, max_count=hps_data.max_count):
         max_count = len(files)
         
     for file in os.listdir(data_path)[:max_count]:
-        with open(f"{data_path}/{file}", encoding='utf-8') as json_file:
+        with open(f'{data_path}/{file}', encoding='utf-8') as json_file:
             data = json.load(json_file)
             data_all.append(data)
     return data_all

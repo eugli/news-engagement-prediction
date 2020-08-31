@@ -8,7 +8,6 @@ MODELS = {
     'cnn-bilstm': ('embedding', 'cnn', 'bilstm', 'linear')
 }
 
-# no cuda implementation yet
 class CNN_BiLSTM(nn.Module):
     def __init__(self, hps):
         super(CNN_BiLSTM, self).__init__()

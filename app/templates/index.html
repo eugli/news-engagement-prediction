@@ -1,21 +1,21 @@
 <!DOCTYPE html>
 <html lang='en'>
     <head>
+		<link rel="icon" 
+	    	  type="image/png" 
+	     	  href="../assets/images/favicon.png">
         <title>news-engagement-prediction</title>
         <meta charset='utf-8'>
         <meta name='viewport'  content='width=device-width, initial-scale=1'>
         <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css'>
         <script src='https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js'></script>
         <script src='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js'></script>
-
         <script>
-         'use strict';
          function submitForm(oFormElement) {
             var xhr = new XMLHttpRequest();
             xhr.onload = function() {
-                 var result = xhr.responseText;
+                 var result = JSON.parse(xhr.responseText).engagement;
                  var resultElement = document.getElementById('result');
-                 console.log(xhr.responseText)
                  if (result >= 5) {
                      resultElement.className = 'bg-success';
                  } else {
@@ -25,21 +25,22 @@
              }
              xhr.open(oFormElement.method, oFormElement.action, true);
              xhr.setRequestHeader('Content-Type', 'application/json');
-             var title = document.getElementById('title');
+             var title = document.getElementById('title').value;
              var json = {
                 'title': title
              }
-             xhr.send(JSON.stringify(json))
+             xhr.send(JSON.stringify(json));
              return false;
          }
         </script>
     </head>
     <body>
         <div class='container'>
+        	<img href="../assets/images/favicon.png">
             <h1>How viral will your news article be?</h1>
             <p>Enter the title of your news article below and click submit to find out!</p>
             <form method='POST'
-                  action='http://localhost:5000/predict'
+                  action='http://news-engagement-prediction.herokuapp.com/predict'
                   onsubmit='return submitForm(this);' >
                 <div class='form-group'>
                     <textarea class='form-control'  rows='5' id='title'>Please enter your title here.</textarea>

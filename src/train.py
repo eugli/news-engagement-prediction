@@ -28,7 +28,7 @@ def create_folder():
     local = pytz.timezone(hps_data.timezone)
     dt = datetime.now().replace(tzinfo=pytz.utc).astimezone(local)
     folder = dt.strftime('%m-%d-%I-%M-%S-%p')
-    os.mkdir(f'../models/{folder}')
+    os.mkdir(f'models/{folder}')
     return folder
 
 def set_seed():
@@ -45,9 +45,9 @@ def save_model(hps, model, min_loss):
     print('Saving model...', end='')
     if hps.use_min:
         min_loss = round(min_loss, 5)              
-        ml_file = f'../models/{hps.folder_s}/{hps.dataset_s}_{hps.count_s}_{min_loss}_model.pt'
+        ml_file = f'models/{hps.folder_s}/{hps.dataset_s}_{hps.count_s}_{min_loss}_model.pt'
     else:   
-        ml_file = f'../models/{hps.folder_s}/{hps.dataset_s}_{hps.count_s}_model.pt'
+        ml_file = f'models/{hps.folder_s}/{hps.dataset_s}_{hps.count_s}_model.pt'
     torch.save(model, ml_file)
     return ml_file   
 
@@ -56,12 +56,12 @@ def get_model(hps):
     return model
 
 def save(folder, item_name, item):
-    phile = open(f'../models/{folder}/{item_name}.pkl', 'wb')
+    phile = open(f'models/{folder}/{item_name}.pkl', 'wb')
     pickle.dump(item, phile)
     phile.close()    
     
 def load(folder, item_name):
-    phile = open(f'../models/{folder}/{item_name}.pkl', 'rb')
+    phile = open(f'models/{folder}/{item_name}.pkl', 'rb')
     item = pickle.load(phile)    
     return item          
 

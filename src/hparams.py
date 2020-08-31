@@ -71,8 +71,8 @@ linear = Hyperparams(
 HPARAMS_REGISTRY['linear'] = linear
 
 hps_data = Hyperparams(
-    data_paths={
-        'webhose-popular':'../data/raw'
+    data_l={
+        'webhose-popular':'webhose/raw'
     },
     use_all_data=False,
     keep_keys=['text', 'title', 'domain_rank', 'performance_score', 'site', 'social', 'url'],
@@ -83,7 +83,7 @@ hps_data = Hyperparams(
     score='original',
     timezone='US/Eastern',
     indent=4,
-    max_count=200,
+    max_count=5000,
     comment_weight=5,
     take_log=True,
     min_len=3,
@@ -111,7 +111,7 @@ hps_opt = Hyperparams(
     sgd=False,  
     mse=True,
     seed=42,
-    epochs=100,
+    epochs=200,
     patience=-1,
     lr=0.001,
     clip=1,

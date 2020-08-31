@@ -13,7 +13,7 @@ from train import load
 template_folder = os.path.abspath('../app/templates')
 app = Flask(__name__, template_folder=template_folder)
 
-folder = '08-29-04-45-06-PM'
+folder = '08-30-07-07-19-PM'
 hps = load(folder, 'hps')
 ml_file = load(folder, 'ml_file')
 model = torch.load(ml_file)
