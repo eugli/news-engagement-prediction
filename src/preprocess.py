@@ -105,6 +105,10 @@ def sanitize_text(text):
     except UnicodeEncodeError:
         return 'fail'
 
+def remove_words(text, dictionary):
+    text = ' '.join([word for word in text.split() if word in dictionary])
+    return text
+
 def get_titles(data_all):
     titles = []
     for file in data_all:

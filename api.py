@@ -15,7 +15,6 @@ hps = load(folder, 'hps')
 ml_file = load(folder, 'ml_file')
 model = torch.load(ml_file)
 tokens = load(folder, 'tokens')
-dictionary = list(tokens.keys())
 
 @app.route('/predict', methods=['POST'])
 def predict():
@@ -40,9 +39,8 @@ def set_all(chps, cmodel, ctokens):
     model = cmodel
     tokens = ctokens
 
-def preprocess(title):
+def preprocess(title, tokens):
     title = pp.sanitize_text(title)
-    title = pp.remove_words(title, dictionary)
     title = pp.tokenize_titles([title], tokens)
     title = pp.pad_titles(title)
     title = torch.tensor(title).to(torch.int64)
@@ -54,7 +52,7 @@ def postprocess(prediction, hps):
     return prediction
 
 def get_prediction(title):
-    title = preprocess(title)
+    title = preprocess(title, tokens)
     prediction = model.forward(title)
     prediction = postprocess(prediction, hps)
     return prediction
