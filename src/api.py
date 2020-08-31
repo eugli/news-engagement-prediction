@@ -4,7 +4,7 @@ import pickle
 
 import torch
 
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, jsonify, render_template, send_from_directory
 
 import preprocess as pp
 import postprocess as pop
@@ -31,6 +31,10 @@ def predict():
 @app.route('/')
 def load():
     return render_template('index.html')
+
+@app.route('/favicon.png')
+def favicon():
+    return send_from_directory(os.path.join(app.root_path, '../app/assets/images'), 'favicon.png')
 
 def load_all(folder):
     hps = load(folder, 'hps')
